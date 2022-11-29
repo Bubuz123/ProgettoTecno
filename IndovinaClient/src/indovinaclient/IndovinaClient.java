@@ -26,17 +26,19 @@ public class IndovinaClient {
         InetAddress ip = InetAddress.getLocalHost(); //Ip del server è stesso del client (stesso pc)
         byte sendByte[] = new byte[1024];
         byte receiveByte[] = new byte[1024];
-
         Scanner sc = new Scanner(System.in);
-        System.out.println("Benvenuto ad indovina il numero. Inserisci il numero di tentativi");
+        
+        /*System.out.println("Benvenuto ad indovina il numero. Inserisci il numero di tentativi");
         String sendStr1 = sc.next();
         System.out.println("");
         sendByte = sendStr1.getBytes();
         int tentativi = Integer.parseInt(sendStr1);
         DatagramPacket sendPacket1 = new DatagramPacket(sendByte, sendByte.length, ip, 1234);
-        socket.send(sendPacket1);
+        socket.send(sendPacket1);*/
+        
+        Boolean controllo = false;
 
-        while (tentativi > 0) {
+        while (!controllo) {
             String sendStr = "";
             do {
                 System.out.println("Inserisci numero (1-20)");
@@ -55,10 +57,8 @@ public class IndovinaClient {
             System.out.println("");
 
             if (receiveStr.equals("Giusto!")) {
-                tentativi = 0;
+                controllo = true;
             }
-
-            tentativi--;
 
         }
 
