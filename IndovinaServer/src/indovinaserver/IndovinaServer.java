@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 
 public class IndovinaServer {
 
-    static List<String>  parole = new ArrayList();
+    static List<String> parole = new ArrayList();
     static String parola = "";
     static int lunghezza = 0;
     static List clients;
@@ -84,7 +84,7 @@ public class IndovinaServer {
     }
 
     private void log(String message) {
-        System.out.println(message); 
+        System.out.println(message);
     }
 
     public static String getParola() {
@@ -105,8 +105,9 @@ public class IndovinaServer {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
-        int x = Util.Random(0, parole.size()-1);
+        int x = Util.Random(0, parole.size() - 1);
         parola = parole.get(x);
         lunghezza = parola.length();
     }
+    
 }

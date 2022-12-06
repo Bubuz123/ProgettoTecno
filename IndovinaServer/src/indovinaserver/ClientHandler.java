@@ -60,6 +60,25 @@ public class ClientHandler implements Runnable {
                 closeStreams();
                 break;
             }
+            
+            if(received.length() != IndovinaServer.lunghezza)
+            {
+                write(output, "Lunghezza sbagliata");
+            }
+            else
+            {
+                String msgast = IndovinaServer.parola;
+                for(int i = 0; i<IndovinaServer.lunghezza; i++)
+                {
+                    if(received.charAt(i) != IndovinaServer.parola.charAt(i))
+                    {
+                        StringBuilder str = new StringBuilder(msgast);
+                        str.setCharAt(i, '*');
+                        msgast = str.toString();
+                    }
+                }
+                write(output, msgast);
+            }
 
             forwardToClient(received);
         }
