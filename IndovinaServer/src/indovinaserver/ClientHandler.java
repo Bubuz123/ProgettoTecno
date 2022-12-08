@@ -22,6 +22,7 @@ public class ClientHandler implements Runnable {
     final Socket socket;
     final Scanner scan;
     String name;
+    String vincitore = "TEST";
     boolean isLosggedIn;
 
     private DataInputStream input;
@@ -50,57 +51,56 @@ public class ClientHandler implements Runnable {
         for (ClientHandler c : IndovinaServer.getClients()) {
             tmp += c.name + ",";
         }
+
         write(output, "Client attivi : " + tmp);
-        write(output, "Parola : " + IndovinaServer.getParola());
-        while (true) {
+        write(output, "Parola : " + IndovinaServer.parola);
+        write(output, "Lunghezza parola : " + IndovinaServer.lunghezza);
+
+        while (!IndovinaServer.isfinito) {
             received = read();
-            if (received.equalsIgnoreCase(Constants.LOGOUT)) {
-                this.isLosggedIn = false;
-                closeSocket();
-                closeStreams();
-                break;
-            }
-            
-            if(received.length() != IndovinaServer.lunghezza)
-            {
+
+            if (received.length() != IndovinaServer.lunghezza) {
                 write(output, "Lunghezza sbagliata");
-            }
-            else
-            {
-                String msgast = IndovinaServer.parola;
-                for(int i = 0; i<IndovinaServer.lunghezza; i++)
-                {
-                    if(received.charAt(i) != IndovinaServer.parola.charAt(i))
-                    {
-                        StringBuilder str = new StringBuilder(msgast);
-                        str.setCharAt(i, '*');
-                        msgast = str.toString();
+            } else {
+                if (received.contains("Jolly")) {
+                    write(output, IndovinaServer.parola);
+                    IndovinaServer.isfinito = true;
+                } else {
+                    String msgast = IndovinaServer.parola;
+                    for (int i = 0; i < IndovinaServer.lunghezza; i++) {
+                        if (received.charAt(i) != IndovinaServer.parola.charAt(i)) {
+                            StringBuilder str = new StringBuilder(msgast);
+                            str.setCharAt(i, '*');
+                            msgast = str.toString();
+                        }
+                    }
+                    if (msgast == IndovinaServer.parola) {
+                        vincitore = name;
+                        write(output, "Hai vinto!");
+                        IndovinaServer.isfinito = true;
+                    } else {
+                        write(output, msgast);
                     }
                 }
-                write(output, msgast);
-            }
-
-            forwardToClient(received);
-        }
-        closeStreams();
-    }
-
-    private void forwardToClient(String received) {
-// username # message
-        StringTokenizer tokenizer = new StringTokenizer(received, "#");
-        String recipient = tokenizer.nextToken().trim();
-        String message = tokenizer.nextToken().trim();
-
-        for (ClientHandler c : IndovinaServer.getClients()) {
-            if (c.isLosggedIn && c.name.equals(recipient)) {
-                write(c.output, recipient + " : " + message);
-                log(name + " --> " + recipient + " : " + message);
-                break;
             }
         }
-
+        log("Fine");
+        Fine();
     }
 
+    
+    private void Fine()
+    {
+        while(true)
+        {
+            write(output, "Ha vinto : " + vincitore);
+            write(output, "Fine");
+        }
+        //closeSocket();
+        //closeStreams();
+        //System.exit(0);
+    }
+    
     private String read() {
         String line = "";
         try {

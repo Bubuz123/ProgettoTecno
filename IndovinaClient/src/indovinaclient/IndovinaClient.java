@@ -27,42 +27,38 @@ public class IndovinaClient {
     Socket socket = null;
     DataInputStream input = null;
     DataOutputStream output = null;
+    static boolean isfinito = false;
     InetAddress ip;
-    
+
     public IndovinaClient() throws UnknownHostException, IOException {
         ip = InetAddress.getByName("localhost");
-        ip = InetAddress.getByName("172.16.102.124");
+        ip = InetAddress.getByName("192.168.227.1");
         socket = new Socket(ip, 1234);
         input = new DataInputStream(socket.getInputStream());
         output = new DataOutputStream(socket.getOutputStream());
         scan = new Scanner(System.in);
     }
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) throws SocketException, UnknownHostException, IOException {
-        
+
         IndovinaClient client = new IndovinaClient();
-        
+
         //riceve i messaggi
         client.readMessageThread();
 
         //invia i messaggi
         client.writeMessageThread();
-        
-        
-        
+
     }
-    
-    private void readMessageThread()
-    {
-        Thread readMessage = new Thread(new Runnable()
-        {
+
+    private void readMessageThread() {
+        Thread readMessage = new Thread(new Runnable() {
             @Override
-            public void run()
-            {
-                while(true)
-                {
+            public void run() {
+                while (true) {
                     String msg = "";
                     try {
                         msg = input.readUTF();
@@ -70,21 +66,22 @@ public class IndovinaClient {
                         Logger.getLogger(IndovinaClient.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     log(msg); //Metodo per visualizzare
+                    if (msg.contains("Fine")) {
+                        log("Ciao");
+                        isfinito = true;
+                        System.exit(0);
+                    }
                 }
             }
         });
         readMessage.start();
     }
-    
-    private void writeMessageThread()
-    {
-        Thread sendMessage = new Thread(new Runnable()
-        {
+
+    private void writeMessageThread() {
+        Thread sendMessage = new Thread(new Runnable() {
             @Override
-            public void run()
-            {
-                while(true)
-                {
+            public void run() {
+                while (!isfinito) {
                     String msg = scan.nextLine();
                     try {
                         output.writeUTF(msg);
@@ -96,9 +93,8 @@ public class IndovinaClient {
         });
         sendMessage.start();
     }
-    
-    private void log(String msg)
-    {
+
+    private void log(String msg) {
         System.out.println(msg);
     }
 

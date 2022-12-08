@@ -37,6 +37,8 @@ public class IndovinaServer {
     static List clients;
     ServerSocket serverSocket;
     static int numOfUsers = 0;
+    static boolean isinizio = true;
+    static boolean isfinito = false;
     Socket socket;
 
     public IndovinaServer() {
@@ -49,7 +51,10 @@ public class IndovinaServer {
     }
 
     public static void main(String[] args) throws IOException {
-        inizio();
+        if (isinizio) {
+            inizio();
+            isinizio = false;
+        }
         IndovinaServer server = new IndovinaServer();
         server.waitConnection();
     }
@@ -87,10 +92,6 @@ public class IndovinaServer {
         System.out.println(message);
     }
 
-    public static String getParola() {
-        return parola;
-    }
-
     private static void inizio() {
         try {
             String filePath = new File("Parole.txt").getAbsolutePath();
@@ -109,5 +110,5 @@ public class IndovinaServer {
         parola = parole.get(x);
         lunghezza = parola.length();
     }
-    
+
 }
