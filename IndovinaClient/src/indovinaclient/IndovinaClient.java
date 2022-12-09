@@ -67,7 +67,6 @@ public class IndovinaClient {
                     }
                     log(msg); //Metodo per visualizzare
                     if (msg.contains("Fine")) {
-                        log("Ciao");
                         isfinito = true;
                         System.exit(0);
                     }

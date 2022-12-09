@@ -39,6 +39,8 @@ public class IndovinaServer {
     static int numOfUsers = 0;
     static boolean isinizio = true;
     static boolean isfinito = false;
+    static int nclient = 0;
+    static String vincitore = "TEST";
     Socket socket;
 
     public IndovinaServer() {
@@ -53,7 +55,6 @@ public class IndovinaServer {
     public static void main(String[] args) throws IOException {
         if (isinizio) {
             inizio();
-            isinizio = false;
         }
         IndovinaServer server = new IndovinaServer();
         server.waitConnection();
@@ -62,7 +63,8 @@ public class IndovinaServer {
     private void waitConnection() throws IOException {
         log("Server Running...");
 
-        while (true) {
+        while (!isfinito && nclient != 0 || isinizio) {
+            isinizio = false;
             try {
                 socket = serverSocket.accept();
             } catch (IOException ex) {

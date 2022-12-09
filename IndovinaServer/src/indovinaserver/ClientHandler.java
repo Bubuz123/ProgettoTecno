@@ -22,8 +22,8 @@ public class ClientHandler implements Runnable {
     final Socket socket;
     final Scanner scan;
     String name;
-    String vincitore = "TEST";
     boolean isLosggedIn;
+    String parolaindovinata = "";
 
     private DataInputStream input;
     private DataOutputStream output;
@@ -51,10 +51,15 @@ public class ClientHandler implements Runnable {
         for (ClientHandler c : IndovinaServer.getClients()) {
             tmp += c.name + ",";
         }
+        IndovinaServer.nclient++;
 
         write(output, "Client attivi : " + tmp);
         write(output, "Parola : " + IndovinaServer.parola);
         write(output, "Lunghezza parola : " + IndovinaServer.lunghezza);
+
+        for (int i = 0; i < IndovinaServer.lunghezza; i++) {
+            parolaindovinata += "*";
+        }
 
         while (!IndovinaServer.isfinito) {
             received = read();
@@ -74,12 +79,19 @@ public class ClientHandler implements Runnable {
                             msgast = str.toString();
                         }
                     }
-                    if (msgast == IndovinaServer.parola) {
-                        vincitore = name;
+                    for (int j = 0; j < IndovinaServer.lunghezza; j++) {
+                        if (msgast.charAt(j) != '*' && parolaindovinata.charAt(j) == '*') {
+                            StringBuilder str2 = new StringBuilder(parolaindovinata);
+                            str2.setCharAt(j, msgast.charAt(j));
+                            parolaindovinata = str2.toString();
+                        }
+                    }
+                    if (parolaindovinata.equals(IndovinaServer.parola)) {
+                        IndovinaServer.vincitore = name;
                         write(output, "Hai vinto!");
                         IndovinaServer.isfinito = true;
                     } else {
-                        write(output, msgast);
+                        write(output, parolaindovinata);
                     }
                 }
             }
@@ -88,19 +100,20 @@ public class ClientHandler implements Runnable {
         Fine();
     }
 
-    
-    private void Fine()
-    {
-        while(true)
-        {
-            write(output, "Ha vinto : " + vincitore);
+    private void Fine() {
+        IndovinaServer.nclient--;
+        while (true) {
+            write(output, "Ha vinto : " + IndovinaServer.vincitore);
             write(output, "Fine");
+            if (IndovinaServer.nclient == 0) {
+                this.isLosggedIn = false;
+                closeSocket();
+                closeStreams();
+                break;
+            }
         }
-        //closeSocket();
-        //closeStreams();
-        //System.exit(0);
     }
-    
+
     private String read() {
         String line = "";
         try {
