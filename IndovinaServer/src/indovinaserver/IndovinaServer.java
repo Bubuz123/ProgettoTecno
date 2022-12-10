@@ -41,6 +41,7 @@ public class IndovinaServer {
     static boolean isfinito = false;
     static int nclient = 0;
     static String vincitore = "TEST";
+    static List<String> Classifica = new ArrayList();
     Socket socket;
 
     public IndovinaServer() {
@@ -104,6 +105,16 @@ public class IndovinaServer {
                 parole.add(data);
             }
             myReader.close();
+            
+            String filePath2 = new File("Classifica.txt").getAbsolutePath();
+            File myObj2 = new File(filePath2);
+            Scanner myReader2 = new Scanner(myObj2);
+            while (myReader2.hasNextLine()) {
+                String data = myReader2.nextLine();
+                Classifica.add(data);
+            }
+            myReader2.close();
+            
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();

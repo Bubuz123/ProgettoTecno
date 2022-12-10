@@ -6,6 +6,9 @@ package indovinaserver;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
@@ -24,6 +27,7 @@ public class ClientHandler implements Runnable {
     String name;
     boolean isLosggedIn;
     String parolaindovinata = "";
+    int tentativi = 0;
 
     private DataInputStream input;
     private DataOutputStream output;
@@ -71,6 +75,7 @@ public class ClientHandler implements Runnable {
                     write(output, IndovinaServer.parola);
                     IndovinaServer.isfinito = true;
                 } else {
+                    tentativi++;
                     String msgast = IndovinaServer.parola;
                     for (int i = 0; i < IndovinaServer.lunghezza; i++) {
                         if (received.charAt(i) != IndovinaServer.parola.charAt(i)) {
@@ -102,15 +107,49 @@ public class ClientHandler implements Runnable {
 
     private void Fine() {
         IndovinaServer.nclient--;
+        write(output, "Ha vinto : " + IndovinaServer.vincitore);
+        write(output, "Fine");
+        //PrintClassifica();
         while (true) {
-            write(output, "Ha vinto : " + IndovinaServer.vincitore);
-            write(output, "Fine");
             if (IndovinaServer.nclient == 0) {
                 this.isLosggedIn = false;
                 closeSocket();
                 closeStreams();
                 break;
             }
+        }
+    }
+    
+    private void PrintClassifica()
+    {
+        boolean controllo = false;
+        for(int i = 0; i<IndovinaServer.Classifica.size()-1; i++)
+        {
+            String s = IndovinaServer.Classifica.get(i);
+            String vett[] = s.split(";");
+            if(Integer.parseInt(vett[1]) > tentativi && !controllo)
+            {
+                controllo = true;
+                IndovinaServer.Classifica.add(i, name + ";" + tentativi);
+            }
+        }
+        if(controllo)
+        {
+            String filePath = new File("Classifica.txt").getAbsolutePath();
+            try {
+                FileWriter myWriter = new FileWriter(filePath);
+                for(int j = 0; j<IndovinaServer.Classifica.size()-1; j++)
+                {
+                    myWriter.write(IndovinaServer.Classifica.get(j));
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        for(int i = 0; i<IndovinaServer.Classifica.size()-1; i++)
+        {
+            String s = IndovinaServer.Classifica.get(i);
+            write(output, s);
         }
     }
 
