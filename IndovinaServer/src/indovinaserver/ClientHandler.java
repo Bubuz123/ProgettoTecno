@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.util.Scanner;
 import java.util.StringTokenizer;
@@ -24,6 +26,8 @@ public class ClientHandler implements Runnable {
 
     final Socket socket;
     final Scanner scan;
+    String filePath = new File("Classifica.txt").getAbsolutePath();
+    PrintWriter writer;
     String name;
     boolean isLosggedIn;
     String parolaindovinata = "";
@@ -108,8 +112,8 @@ public class ClientHandler implements Runnable {
     private void Fine() {
         IndovinaServer.nclient--;
         write(output, "Ha vinto : " + IndovinaServer.vincitore);
+        PrintClassifica();
         write(output, "Fine");
-        //PrintClassifica();
         while (true) {
             if (IndovinaServer.nclient == 0) {
                 this.isLosggedIn = false;
@@ -119,38 +123,38 @@ public class ClientHandler implements Runnable {
             }
         }
     }
-    
-    private void PrintClassifica()
-    {
+
+    private void PrintClassifica() {
         boolean controllo = false;
-        for(int i = 0; i<IndovinaServer.Classifica.size()-1; i++)
-        {
+        for (int i = 0; i < IndovinaServer.Classifica.size(); i++) {
             String s = IndovinaServer.Classifica.get(i);
             String vett[] = s.split(";");
-            if(Integer.parseInt(vett[1]) > tentativi && !controllo)
-            {
+            if (Integer.parseInt(vett[1]) > tentativi && !controllo) {
                 controllo = true;
                 IndovinaServer.Classifica.add(i, name + ";" + tentativi);
             }
         }
-        if(controllo)
-        {
-            String filePath = new File("Classifica.txt").getAbsolutePath();
+        String s = "";
+        String filePath = new File("Classifica.txt").getAbsolutePath();
+        if (controllo) {
+            File myObj = new File(filePath);
+            myObj.delete();
             try {
-                FileWriter myWriter = new FileWriter(filePath);
-                for(int j = 0; j<IndovinaServer.Classifica.size()-1; j++)
-                {
-                    myWriter.write(IndovinaServer.Classifica.get(j));
-                }
-            } catch (IOException ex) {
+                writer = new PrintWriter(filePath, "UTF-8");
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (UnsupportedEncodingException ex) {
                 Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        for(int i = 0; i<IndovinaServer.Classifica.size()-1; i++)
-        {
-            String s = IndovinaServer.Classifica.get(i);
+        for (int i = 0; i < IndovinaServer.Classifica.size(); i++) {
+            s = IndovinaServer.Classifica.get(i);
             write(output, s);
+            if (controllo) {
+                writer.println(s);
+            }
         }
+        writer.close();
     }
 
     private String read() {

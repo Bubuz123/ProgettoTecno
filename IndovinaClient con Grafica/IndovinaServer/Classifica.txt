@@ -1,3 +1,0 @@
-User1;5
-User4;7
-User2;9
