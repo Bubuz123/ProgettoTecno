@@ -62,7 +62,6 @@ public class ClientHandler implements Runnable {
         IndovinaServer.nclient++;
 
         write(output, "Client attivi : " + tmp);
-        write(output, "Parola : " + IndovinaServer.parola);
         write(output, "Lunghezza parola : " + IndovinaServer.lunghezza);
 
         for (int i = 0; i < IndovinaServer.lunghezza; i++) {
