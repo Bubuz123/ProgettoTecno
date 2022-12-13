@@ -73,15 +73,14 @@ public class IndovinaServer {
             }
 
             log("Client accepted : " + socket.getInetAddress());
-            numOfUsers++;
 
+            numOfUsers++;
             ClientHandler handler = new ClientHandler(socket, "user" + numOfUsers);
 
             Thread thread = new Thread(handler);
             addClient(handler);
             thread.start();
         }
-        log("Fine ciao");
     }
 
     public static List<ClientHandler> getClients() {
@@ -92,7 +91,7 @@ public class IndovinaServer {
         clients.add(client);
     }
 
-    private void log(String message) {
+    private static void log(String message) {
         System.out.println(message);
     }
 
@@ -123,6 +122,7 @@ public class IndovinaServer {
         int x = Util.Random(0, parole.size() - 1);
         parola = parole.get(x);
         lunghezza = parola.length();
+        log("Parola: " + parola);
     }
 
 }

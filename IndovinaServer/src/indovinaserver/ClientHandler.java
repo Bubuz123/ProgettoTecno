@@ -60,7 +60,6 @@ public class ClientHandler implements Runnable {
         for (ClientHandler c : IndovinaServer.getClients()) {
             tmp += c.name + ",";
         }
-        IndovinaServer.numOfUsers++;
 
         write(output, "Client attivi : " + tmp);
         write(output, "Lunghezza parola : " + IndovinaServer.lunghezza);
